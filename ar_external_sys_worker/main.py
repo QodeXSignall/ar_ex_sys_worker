@@ -355,7 +355,10 @@ class ASUActsWorker(mixins.AsuMixin, ActsWorker,
     def set_current_localzone(self, date):
         date = date.replace(tzinfo=None)
         current_localzone = tzlocal.get_localzone()
-        date = current_localzone.localize(date)
+        if hasattr(current_localzone, "localize"):
+            date = current_localzone.localize(date)
+        else:
+            date = date.replace(tzinfo=current_localzone)
         return date
 
     def convert_time_to_msk(self, date, new_timezone, *args, **kwargs):
